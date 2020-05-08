@@ -1,5 +1,6 @@
 ﻿using Nancy;
 using Nancy.Owin;
+using Nancy.Security;
 
 namespace OwinPluralsight.Modules
 {
@@ -7,11 +8,16 @@ namespace OwinPluralsight.Modules
     {
         public NancyDemoModule()
         {
+            this.RequiresMSOwinAuthentication();
+
             //called everytime this path is called
             Get("/nancy", _ =>
             {
                 var env = Context.GetOwinEnvironment();
-                return "Hello from Nancy you requested: " + env["owin.RequestPathBase"] + env["owin.RequestPath"];
+
+                var user = Context.GetMSOwinUser();
+
+                return "Hello from Nancy you requested: " + env["owin.RequestPathBase"] + env["owin.RequestPath"] + ". User " +user.Identity.Name;
             });
         }
     }

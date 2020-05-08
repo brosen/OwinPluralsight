@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Nancy.Owin;
 using Nancy;
 using System.Web.Http;
+using Microsoft.Owin.Security.Cookies;
 
 //[assembly: OwinStartupAttribute(typeof(OwinPluralsight.Startup))]
 namespace OwinPluralsight
@@ -30,17 +31,35 @@ namespace OwinPluralsight
                 }
             });
 
-            //below not working???
-           // var config = new HttpConfiguration();
-            //config.MapHttpAttributeRoutes(); //look for routes in the application and map them like the one in hello world
+            app.UseCookieAuthentication(new CookieAuthenticationOptions() {
+                AuthenticationType="ApplicationCookie",
+                LoginPath=new PathString("/Auth/Login")
+            });
+
+            app.Use(async (ctx, next) => {
+                if (ctx.Authentication.User.Identity.IsAuthenticated)
+                {
+                    Debug.WriteLine("User " + ctx.Authentication.User.Identity.Name);
+                }
+                else
+                {
+                    Debug.WriteLine("User not authenticated");
+                }
+                await next();
+            });
+
+            var config = new HttpConfiguration();
+            config.MapHttpAttributeRoutes(); //look for routes in the application and map them like the one in hello world
+            app.UseWebApi(config); // <-dont forget, needed so it finds web api routes from api controllers
 
             /*
              gets to nancy, config set to bypass nancy when path not found
              */
-            app.UseNancy(conf =>
-            {
-                conf.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound);
-            });
+            //app.UseNancy(conf =>
+            //{
+            //    conf.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound);
+            //});
+            app.Map("/nancy", mappedApp => { mappedApp.UseNancy(); });
 
             //delegate function below
             //app.Use(async (ctx, next) =>
