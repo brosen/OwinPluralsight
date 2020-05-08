@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using OwinPluralsight.Middleware;
 using System.Diagnostics;
 
 [assembly: OwinStartupAttribute(typeof(OwinPluralsight.Startup))]
@@ -12,14 +13,7 @@ namespace OwinPluralsight
         {
             ConfigureAuth(app);
 
-            //owin contex, next thing in pipeline
-            app.Use(async (ctx, next) => {
-                //debugging middleware
-                Debug.WriteLine("Incoming request: " + ctx.Request.Path);
-                await next(); //wait for pipeline on the response way back
-                Debug.WriteLine("Outgoing request: " + ctx.Request.Path);
-            });
-
+            app.Use<DebugMiddleware>();
 
             //delegate function below
             app.Use(async(ctx, next) => {
