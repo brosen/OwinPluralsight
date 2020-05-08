@@ -30,8 +30,9 @@ namespace OwinPluralsight
                 }
             });
 
-            var config = new HttpConfiguration();
-            config.MapHttpAttributeRoutes(); //look for routes in the application and map them like the one in hello world
+            //below not working???
+           // var config = new HttpConfiguration();
+            //config.MapHttpAttributeRoutes(); //look for routes in the application and map them like the one in hello world
 
             /*
              gets to nancy, config set to bypass nancy when path not found
@@ -42,11 +43,11 @@ namespace OwinPluralsight
             });
 
             //delegate function below
-            app.Use(async (ctx, next) =>
-            {
-                await ctx.Response.WriteAsync(html); //since this is async, dont forget await so that it doesnt return until this is complete
-                //response writes to response body
-            });
+            //app.Use(async (ctx, next) =>
+            //{
+            //    await ctx.Response.WriteAsync(html); //since this is async, dont forget await so that it doesnt return until this is complete
+            //    //response writes to response body
+            //});
         }
 
 
