@@ -4,8 +4,9 @@ using OwinPluralsight.Middleware;
 using System.Diagnostics;
 using Nancy.Owin;
 using Nancy;
+using System.Web.Http;
 
-[assembly: OwinStartupAttribute(typeof(OwinPluralsight.Startup))]
+//[assembly: OwinStartupAttribute(typeof(OwinPluralsight.Startup))]
 namespace OwinPluralsight
 {
     public partial class Startup
@@ -13,8 +14,6 @@ namespace OwinPluralsight
         public static string html="<html><body>Hello World</body></html>";
         public void Configuration(IAppBuilder app)
         {
-            ConfigureAuth(app);
-
             app.UseDebugMiddleware(new DebugMiddlewareOptions
             {
                 OnIncomingRequest = (ctx) =>
@@ -31,18 +30,23 @@ namespace OwinPluralsight
                 }
             });
 
+            var config = new HttpConfiguration();
+            config.MapHttpAttributeRoutes(); //look for routes in the application and map them like the one in hello world
+
             /*
              gets to nancy, config set to bypass nancy when path not found
              */
-            app.UseNancy(config => {
-                config.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound); 
+            app.UseNancy(conf =>
+            {
+                conf.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound);
             });
 
             //delegate function below
-            app.Use(async(ctx, next) => {
+            app.Use(async (ctx, next) =>
+            {
                 await ctx.Response.WriteAsync(html); //since this is async, dont forget await so that it doesnt return until this is complete
                 //response writes to response body
-            }); 
+            });
         }
 
 
