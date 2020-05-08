@@ -15,17 +15,29 @@ namespace OwinPluralsight.Middleware
     public class DebugMiddleware
     {
         AppFunc _next;
-        public DebugMiddleware(AppFunc next) //takes one param to constructor
+        DebugMiddlewareOptions _options;
+        public DebugMiddleware(AppFunc next, DebugMiddlewareOptions options)
         {
             _next = next;
+            _options = options;
+
+            if (_options.OnIncomingRequest == null) //since coming from outside, do a null check
+            {
+                _options.OnIncomingRequest = (ctx) => { Debug.WriteLine("Incoming request: " + ctx.Request.Path); };
+            }
+
+            if (_options.OnOutgoingRequest == null) 
+            {
+                _options.OnOutgoingRequest = (ctx) => { Debug.WriteLine("Outgoing request: " + ctx.Request.Path); };
+            }
         }
 
         public async Task Invoke(IDictionary<string, object> env)
         {
             var ctx = new OwinContext(env);
-            Debug.WriteLine("Incoming request: " + ctx.Request.Path);
-            await _next(env); 
-            Debug.WriteLine("Outgoing request: " + ctx.Request.Path);
+            _options.OnIncomingRequest(ctx);
+            await _next(env);
+            _options.OnOutgoingRequest(ctx);
         }
     }
 }

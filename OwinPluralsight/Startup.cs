@@ -13,7 +13,7 @@ namespace OwinPluralsight
         {
             ConfigureAuth(app);
 
-            app.Use<DebugMiddleware>();
+            app.Use<DebugMiddleware>(new DebugMiddlewareOptions());
 
             //delegate function below
             app.Use(async(ctx, next) => {
