@@ -2,6 +2,8 @@
 using Owin;
 using OwinPluralsight.Middleware;
 using System.Diagnostics;
+using Nancy.Owin;
+using Nancy;
 
 [assembly: OwinStartupAttribute(typeof(OwinPluralsight.Startup))]
 namespace OwinPluralsight
@@ -27,6 +29,13 @@ namespace OwinPluralsight
                     watch.Stop();
                     Debug.WriteLine("Request took " + watch.ElapsedMilliseconds + " ms");
                 }
+            });
+
+            /*
+             gets to nancy, config set to bypass nancy when path not found
+             */
+            app.UseNancy(config => {
+                config.PassThroughWhenStatusCodesAre(HttpStatusCode.NotFound); 
             });
 
             //delegate function below
